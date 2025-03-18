@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const UserProject = sequelize.define('usuarios_proyectos', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     usuario_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -7,7 +7,6 @@ const Permission = sequelize.define('permisos', {
 }, {
     timestamps: false,
     tableName: 'permisos',
-    schema: 'general'
 })
 
 module.exports = Permission;
