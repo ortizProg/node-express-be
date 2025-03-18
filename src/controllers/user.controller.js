@@ -1,5 +1,5 @@
 const User = require('../model/user.model');
-const bcript = require('bcrypjs');
+const bcript = require('bcryptjs');
 const userService = require('../services/user.service');
 
 /**
