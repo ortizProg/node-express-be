@@ -15,18 +15,32 @@ exports.createUser = async (req, res) => {
     }
 }
 
+
 /**
  * Devuelve todos los usuarios que coincidan con el administrador_id
 */
 exports.getAllUserByAdministradorId = async (req, res) => {
     try {
-        const admin_from_token = req.user.id;
-        const {email } = req.query;
-        const users = await userService.getAllUserByAdministradorId(admin_from_token, email);
+        const {id} = req.user;
+        const users = await userService.getAllUserByAdministradorId(id);
         res.status(200).json({message: 'Usuarios consultados con exito', users});
 
     } catch(error) {
         res.status(500).json({message: 'Error al obtener los usuarios', error});
+    }
+}
+
+/**
+ * Devuelve el registro del usuario que coincida con el id
+*/
+exports.getById = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const user = await userService.getById(id);
+        res.status(200).json({message: 'Usuario consultado con exito', user});
+
+    } catch(error) {
+        res.status(500).json({message: 'Error al obtener el usuario', error});
     }
 }
 

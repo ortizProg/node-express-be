@@ -30,13 +30,9 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
 /**
  * Devuelve todos los usuarios que coincidan con el administrador_id
 */
-exports.getAllUserByAdministradorId = async (administrador_id, email) => {
+exports.getAllUserByAdministradorId = async (administrador_id) => {
     try {
         const whereClause = {administrador_id};
-
-        if(email) {
-            whereClause.email = email;
-        }
 
         const users = await User.findAll({
             where: whereClause, attributes: {exclude: ['password']}
@@ -44,6 +40,20 @@ exports.getAllUserByAdministradorId = async (administrador_id, email) => {
         return users
     } catch(err) {
         throw new Error('Error al obtener los usuarios')
+    }
+}
+
+/**
+ * Devuelve el registro del usuario que coincida con el id
+*/
+exports.getById = async (id) => {
+    try {
+        const user = await User.findByPk(id, {
+           attributes: {exclude: ['password']}
+        })
+        return user
+    } catch(err) {
+        throw new Error('Error al obtener el usuario')
     }
 }
 
