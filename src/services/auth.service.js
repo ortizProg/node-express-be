@@ -2,11 +2,11 @@ const jwt = require('jsonwebtoken'); //Importar libreria jsonwebtoken para gener
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const User = require('../models/user.model');
-const RolePermission = require('../models/rolePermission.model');
+const RolePermission = require('../models/rolPermission.model');
 
 dotenv.config();
 
-const SECRET_KEY = proccess.env.JWT_SECRET; // Obtener la clave secreta desde las variables de entorno
+const SECRET_KEY = process.env.JWT_SECRET; // Obtener la clave secreta desde las variables de entorno
 
 exports.loginUser = async (email, password) => {
     try {
