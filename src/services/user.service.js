@@ -3,6 +3,11 @@ const bcrypt = require('bcryptjs');
 
 /**
  * Crea un usuario
+ * @param nombre
+ * @param email
+ * @param password
+ * @param rol_id
+ * @param administrador_id
 */
 exports.createUser = async (nombre, email, password, rol_id, administrador_id) => {
     try {
@@ -12,10 +17,13 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
             }
         })
 
+        // Valida si el email ya se encuentra registrado
         if(userExists) throw new Error('El usuario ya existe');
 
+        // Encripta la contraseña del usuario
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Crea el registro del usuario
         const newUser = await User.create({
             nombre, email, password: hashedPassword, rol_id, administrador_id
         })
@@ -29,6 +37,7 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
 
 /**
  * Devuelve todos los usuarios que coincidan con el administrador_id
+ * @param administrador_id
 */
 exports.getAllUserByAdministradorId = async (administrador_id) => {
     try {
@@ -45,6 +54,7 @@ exports.getAllUserByAdministradorId = async (administrador_id) => {
 
 /**
  * Devuelve el registro del usuario que coincida con el id
+ * @param id
 */
 exports.getById = async (id) => {
     try {
@@ -59,6 +69,7 @@ exports.getById = async (id) => {
 
 /**
  * Devuelve todos los usuarios que coincidan con el rol_id
+ * @param rol_id
 */
 exports.getAllUserByRolId = async (rol_id) => {
     try {
@@ -73,16 +84,25 @@ exports.getAllUserByRolId = async (rol_id) => {
 
 /**
  * Actualiza el usuario que tenga el id
+ * @param id
+ * @param nombre
+ * @param email
+ * @param password
+ * @param rol_id
+ * @param administrador_id
+ * @param admin_from_token
 */
 exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_from_token) => {
     try {
         const user = await User.findByPk(Number(id));
-
+        
+        // Valida si el administrador que quiere modificar el registro es el admin del usuario
         if(user.administrador_id != admin_from_token) throw new Error('Acceso denegado, este usuario no esta bajo su administación');
         
-
+        // Valida si el usuario no existe
         if(!user) throw new Error('Usuario no encontrado');
 
+        // Valida si el email no se encuentra registrado en otro usuario
         if(email && email != user.email) {
             const userExists = await User.findOne({
                 where: {email}
@@ -91,7 +111,7 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
             if(userExists) throw new Error('El email ya esta en uso');
         }
 
-
+        // Actualiza a el usuario
         await user.update({
             nombre,
             email,
@@ -107,15 +127,21 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
 
 /**
  * Elimina el usuario que tenga el id
+ * @param id
+ * @param admin_from_token
 */
 exports.deleteUser = async (id, admin_from_token) => {
     try {
+
+        // Valida si el administrador que quiere eliminar el registro es el admin del usuario
         if(user.administrador_id != admin_from_token) throw new Error('Acceso denegado, este usuario no esta bajo su administación');
         
         const user = await User.findByPk(id);
         
+        // Valida si el usuario no existe
         if(!user) throw new Error('Usuario no encontrado');
 
+        // Elimina el usuario
         await user.destroy();
 
         return {message: 'Usuario eliminado con éxito'};

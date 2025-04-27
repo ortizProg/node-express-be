@@ -4,6 +4,9 @@ const UserProjectService = require('./project-user-asso.service');
 
 /**
  * Crear un proyecto
+ * @param administrador_id
+ * @param nombre
+ * @param descripcion
 */
 exports.createProject = async (administrador_id, nombre, descripcion) => {
     try {
@@ -15,8 +18,10 @@ exports.createProject = async (administrador_id, nombre, descripcion) => {
             }
         })
 
+        // Valida si el nombre del proyecto ya existe asociado a el administrador
         if(proyectExists) throw new Error('El proyecto ya existe para el administrador');
 
+        // Crea el proyecto
         const newProject = await Project.create({
             administrador_id, 
             nombre, 
@@ -56,6 +61,7 @@ exports.getAllProjects = async () => {
 }
 /**
  * Devuelve el proyecto que coincida con el id
+ * @param id
 */
 exports.getById = async (id) => {
     try {
@@ -81,6 +87,7 @@ exports.getById = async (id) => {
 }
 /**
  * Devuelve todos los proyectos que coincidan con el administrador_id
+ * @param id
 */
 exports.getAllProjectByAdministradorId = async (id) => {
     try {
@@ -109,8 +116,9 @@ exports.getAllProjectByAdministradorId = async (id) => {
 }
 /**
  * Devuelve todos los proyectos asociados a un usuario
+ * @param user_id
 */
-exports.getByUser = async (userId) => {
+exports.getByUser = async (user_id) => {
     try {
         const projects = await Project.findAll({
             include: [
@@ -123,7 +131,7 @@ exports.getByUser = async (userId) => {
                     model: User,
                     as: 'usuarios',
                     where: {
-                        id: userId
+                        id: user_id
                     },
                     attributes: ['id', 'nombre', 'email'],
                     through: {attributes: []}
@@ -137,13 +145,20 @@ exports.getByUser = async (userId) => {
 }
 /**
  * Actualiza el proyecto que tenga el id
+ * @param id
+ * @param nombre
+ * @param descripcion
+ * @param administrador_id
+ * @param admin_from_token
 */
 exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(id);
 
+        // Valida si el administrador que quiere modificar el registro es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
         
+        // Valida si el proyecto no existe
         if(!project) throw new Error('Proyecto no encontrado');
 
         await project.update({
@@ -159,15 +174,20 @@ exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_
 }
 /**
  * Elimina el proyecto que tenga el id
+ * @param id
+ * @param admin_from_token
 */
 exports.deleteProject = async (id, admin_from_token) => {
     try {
         const project = await Project.findByPk(id);
 
+        // Valida si el administrador que quiere modificar el registro es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
         
+        // Valida si el proyecto no existe
         if(!project) throw new Error('Proyecto no encontrado');
 
+        // Elimina el proyecto
         await project.destroy();
 
         return {message: 'Proyecto eliminado con éxito'};
@@ -177,17 +197,24 @@ exports.deleteProject = async (id, admin_from_token) => {
 }
 /**
  * Asociar un usuario a un proyecto
+ * @param usuario_id
+ * @param proyecto_id
+ * @param admin_from_token
 */
 exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(proyecto_id);
 
+        // Valida si el administrador que quiere crear la asociacion es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
         
+        // Valida si el proyecto no existe
         if(!project) throw new Error('Proyecto no encontrado');
 
+        // Se llama el servicio que creara la asociacion
         const assoProccess = await  UserProjectService.createAssociation(usuario_id, proyecto_id);
 
+        // Si el proceso fallo devolvera el error
         if(assoProccess instanceof Error) throw assoProccess;
 
         return assoProccess;
@@ -198,17 +225,24 @@ exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
 }
 /**
  * Desasociar un usuario de un proyecto
+ * @param usuario_id
+ * @param proyecto_id
+ * @param admin_from_token
 */
 exports.disassociateUser = async (usuario_id, proyecto_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(proyecto_id);
 
+        // Valida si el administrador que quiere eliminar la asociacion es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
         
+        // Valida si el proyecto no existe
         if(!project) throw new Error('Proyecto no encontrado');
 
+        // Se llama el servicio que eliminara la asociacion
         const disassoProccess = await  UserProjectService.removeAssociation(usuario_id, proyecto_id);
-
+        
+        // Si el proceso fallo devolvera el error
         if(disassoProccess instanceof Error) throw disassoProccess;
 
         return disassoProccess;
