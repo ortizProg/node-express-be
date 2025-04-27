@@ -29,7 +29,9 @@ exports.createProject = async (administrador_id, nombre, descripcion) => {
         throw new Error('Error al crear el proyecto')
     }
 }
-
+/**
+ * Devuelve todos los proyectos
+*/
 exports.getAllProjects = async () => {
     try {
         const projects = await Project.findAll({
@@ -52,7 +54,9 @@ exports.getAllProjects = async () => {
         throw new Error(`Error al obtener los proyectos: ${err.message}`);
     }
 }
-
+/**
+ * Devuelve el proyecto que coincida con el id
+*/
 exports.getById = async (id) => {
     try {
         const project = await Project.findByPk(id, {
@@ -75,7 +79,9 @@ exports.getById = async (id) => {
         throw new Error(`Error al obtener el proyecto: ${err.message}`);
     }
 }
-
+/**
+ * Devuelve todos los proyectos que coincidan con el administrador_id
+*/
 exports.getAllProjectByAdministradorId = async (id) => {
     try {
         const projects = await Project.findAll({
@@ -101,7 +107,9 @@ exports.getAllProjectByAdministradorId = async (id) => {
         throw new Error(`Error al obtener los proyectos: ${err.message}`);
     }
 }
-
+/**
+ * Devuelve todos los proyectos asociados a un usuario
+*/
 exports.getByUser = async (userId) => {
     try {
         const projects = await Project.findAll({
@@ -127,7 +135,9 @@ exports.getByUser = async (userId) => {
         throw new Error(`Error al obtener los proyectos: ${err.message}`);
     }
 }
-
+/**
+ * Actualiza el proyecto que tenga el id
+*/
 exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(id);
@@ -147,7 +157,9 @@ exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_
         throw new Error('Error al actualizar el proyecto')
     }
 }
-
+/**
+ * Elimina el proyecto que tenga el id
+*/
 exports.deleteProject = async (id, admin_from_token) => {
     try {
         const project = await Project.findByPk(id);
@@ -163,7 +175,9 @@ exports.deleteProject = async (id, admin_from_token) => {
         throw new Error(`Error al eliminar al proyecto: ${err.message}`)
     }
 }
-
+/**
+ * Asociar un usuario a un proyecto
+*/
 exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(proyecto_id);
@@ -182,7 +196,9 @@ exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
         throw new Error('Error al crear la asociacion')
     }
 }
-
+/**
+ * Desasociar un usuario de un proyecto
+*/
 exports.disassociateUser = async (usuario_id, proyecto_id, admin_from_token) => {
     try {
         const project = await Project.findByPk(proyecto_id);
