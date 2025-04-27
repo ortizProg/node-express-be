@@ -1,5 +1,5 @@
-const User = require('../model/user.model');
-const bcript = require('bcrypjs');
+const User = require('../models/user.model');
+const bcrypt = require('bcryptjs');
 
 /**
  * Crea un usuario
@@ -14,7 +14,7 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
 
         if(userExists) throw new Error('El usuario ya existe');
 
-        const hashedPassword = await bcrypt.bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
             nombre, email, password: hashedPassword, rol_id, administrador_id
@@ -66,7 +66,7 @@ exports.getAllUserByRolId = async (rol_id) => {
 */
 exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_from_token) => {
     try {
-        const user = await User.findByPk(id);
+        const user = await User.findByPk(Number(id));
 
         if(user.administrador_id != admin_from_token) throw new Error('Acceso denegado, este usuario no esta bajo su administación');
         
@@ -81,12 +81,13 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
             if(userExists) throw new Error('El email ya esta en uso');
         }
 
+
         await user.update({
             nombre,
             email,
             rol_id,
             administrador_id
-        }, id)
+        })
 
         return user;
     } catch(err) {
@@ -99,9 +100,9 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
 */
 exports.deleteUser = async (id, admin_from_token) => {
     try {
-        const user = await User.findByPk(id);
-
         if(user.administrador_id != admin_from_token) throw new Error('Acceso denegado, este usuario no esta bajo su administación');
+        
+        const user = await User.findByPk(id);
         
         if(!user) throw new Error('Usuario no encontrado');
 

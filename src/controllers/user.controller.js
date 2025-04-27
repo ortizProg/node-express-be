@@ -1,5 +1,3 @@
-const User = require('../model/user.model');
-const bcript = require('bcryptjs');
 const userService = require('../services/user.service');
 
 /**
@@ -8,12 +6,12 @@ const userService = require('../services/user.service');
 exports.createUser = async (req, res) => {
     try {
         const admin_from_token = req.user.id;
-        const {email } = req.query;
-        const result = await userService.createUser(admin_from_token, email);
-        res.status(200).json({message: 'Usuarios consultados con exito', result});
+        const {nombre, email, password, rol_id } = req.body;
+        const result = await userService.createUser(nombre, email, password, rol_id, admin_from_token);
+        res.status(200).json({message: 'Usuario creado con exito', result});
 
     } catch(error) {
-        res.status(200).json({message: 'Error al obtener los usuarios', error});
+        res.status(500).json({message: 'Error al crear los usuarios', error});
     }
 }
 
@@ -24,7 +22,7 @@ exports.getAllUserByAdministradorId = async (req, res) => {
     try {
         const admin_from_token = req.user.id;
         const {email } = req.query;
-        const users = await userService.getAllUsersByAdministradorId(admin_from_token, email);
+        const users = await userService.getAllUserByAdministradorId(admin_from_token, email);
         res.status(200).json({message: 'Usuarios consultados con exito', users});
 
     } catch(error) {
@@ -37,7 +35,7 @@ exports.getAllUserByAdministradorId = async (req, res) => {
 */
 exports.getAllUserByRolId = async (req, res) => {
     try {
-        const users = await userService.getAllUsersByRolId(req.params.id);
+        const users = await userService.getAllUserByRolId(req.params.id);
         res.status(200).json({message: 'Usuarios consultados con exito', users});
 
     } catch(error) {
