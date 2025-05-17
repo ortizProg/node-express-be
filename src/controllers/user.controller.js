@@ -1,4 +1,5 @@
 const userService = require('../services/user.service');
+const { validateStringParam } = require('../utils/utils')
 
 /**
  * Crea un usuario
@@ -22,7 +23,8 @@ exports.createUser = async (req, res) => {
 exports.getAllUserByAdministradorId = async (req, res) => {
     try {
         const {id} = req.user;
-        const users = await userService.getAllUserByAdministradorId(id);
+        const {nombre, email} = req.query;
+        const users = await userService.getAllUserByAdministradorId(id, validateStringParam(nombre), validateStringParam(email));
         res.status(200).json({message: 'Usuarios consultados con exito', users});
 
     } catch(error) {

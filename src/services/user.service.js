@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 
@@ -39,9 +40,20 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
  * Devuelve todos los usuarios que coincidan con el administrador_id
  * @param administrador_id
 */
-exports.getAllUserByAdministradorId = async (administrador_id) => {
+exports.getAllUserByAdministradorId = async (administrador_id, nombre, email) => {
     try {
-        const whereClause = {administrador_id};
+        const whereClause = {
+            administrador_id,
+            nombre: {
+                [Op.iLike]: `%${nombre}%`
+            },
+            email: {
+                [Op.iLike]: `%${email}%`
+            },
+        };
+
+        if(!nombre) delete whereClause.nombre;
+        if(!email) delete whereClause.email;
 
         const users = await User.findAll({
             where: whereClause, attributes: {exclude: ['password']}
