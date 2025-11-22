@@ -23,5 +23,13 @@ const createClinicalHistory = async (data, file) => {
 };
 
 module.exports = {
-    createClinicalHistory
+    createClinicalHistory,
+    getClinicalHistoriesByPatientId: async (documentNumber) => {
+        try {
+            const histories = await clinicalHistoryRepository.findAllByPatientId(documentNumber);
+            return histories;
+        } catch (error) {
+            throw error;
+        }
+    }
 };

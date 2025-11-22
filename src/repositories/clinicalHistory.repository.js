@@ -10,5 +10,25 @@ const create = async (data) => {
 };
 
 module.exports = {
-    create
+    create,
+    findAllByPatientId: async (documentNumber) => {
+        try {
+            const histories = await ClinicalHistory.findAll({
+                where: {
+                    numero_documento: documentNumber
+                },
+                include: [
+                    {
+                        model: require('../models/healtCenter.model'),
+                        as: 'centro_salud',
+                        attributes: ['nombre']
+                    }
+                ],
+                order: [['createdAt', 'DESC']]
+            });
+            return histories;
+        } catch (error) {
+            throw error;
+        }
+    }
 };

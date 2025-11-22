@@ -22,6 +22,10 @@ const ClinicalHistory = sequelize.define('historias_clinicas', {
     archivo_url: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    numero_documento: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 }, {
     timestamps: true, // Adding timestamps for createdAt/updatedAt is usually good practice, but user didn't specify. Defaulting to true or matching user.model pattern.
