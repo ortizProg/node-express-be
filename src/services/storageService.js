@@ -2,14 +2,15 @@ const { bucket } = require('../config/firebase');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
-const uploadFile = async (file) => {
+const uploadFile = async (file, folder = '') => {
     return new Promise((resolve, reject) => {
         if (!file) {
             reject(new Error('No file provided'));
         }
 
-        const newFileName = `${uuidv4()}${path.extname(file.originalname)}`;
-        const fileUpload = bucket.file(newFileName);
+        const fileName = `${uuidv4()}${path.extname(file.originalname)}`;
+        const filePath = folder ? `${folder}/${fileName}` : fileName;
+        const fileUpload = bucket.file(filePath);
 
         const blobStream = fileUpload.createWriteStream({
             metadata: {
