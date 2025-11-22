@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const {authenticateToken, checkRole} = require('../middlewares/auth.middleware');
-const ROLES = require('../utils/constants');
+const {ROLES} = require('../utils/constants');
 const errorHandler = require('../middlewares/error.middleware');
 
 // Rutas de usuarios

@@ -1,6 +1,7 @@
-const Project = require('../models/project.model');
+const HealtCenter = require('../models/healtCenter.model');
 const User = require('../models/user.model');
 const UserProjectService = require('./project-user-asso.service');
+const UserService = require('./user.service');
 
 /**
  * Crear un proyecto
@@ -11,7 +12,7 @@ const UserProjectService = require('./project-user-asso.service');
 exports.createProject = async (administrador_id, nombre, descripcion) => {
     try {
 
-        const proyectExists = await Project.findOne({
+        const proyectExists = await HealtCenter.findOne({
             where: {
                 administrador_id,
                 nombre
@@ -22,11 +23,16 @@ exports.createProject = async (administrador_id, nombre, descripcion) => {
         if(proyectExists) throw new Error('El proyecto ya existe para el administrador');
 
         // Crea el proyecto
-        const newProject = await Project.create({
+        const newProject = await HealtCenter.create({
             administrador_id, 
             nombre, 
             descripcion
         })
+
+        // Crear la asociacion con el proyecto
+        const association = this.associateUser(administrador_id, newProject.dataValues.id, administrador_id)
+
+        if(association instanceof Error) throw new Error('Error al crear la asociación');
 
         return newProject;
 
@@ -39,7 +45,7 @@ exports.createProject = async (administrador_id, nombre, descripcion) => {
 */
 exports.getAllProjects = async () => {
     try {
-        const projects = await Project.findAll({
+        const projects = await HealtCenter.findAll({
             include: [
                 {
                     model: User,
@@ -65,7 +71,7 @@ exports.getAllProjects = async () => {
 */
 exports.getById = async (id) => {
     try {
-        const project = await Project.findByPk(id, {
+        const project = await HealtCenter.findByPk(id, {
             include: [
                 {
                     model: User,
@@ -91,7 +97,7 @@ exports.getById = async (id) => {
 */
 exports.getAllProjectByAdministradorId = async (id) => {
     try {
-        const projects = await Project.findAll({
+        const projects = await HealtCenter.findAll({
             where: {
                 administrador_id: id
             },
@@ -120,7 +126,7 @@ exports.getAllProjectByAdministradorId = async (id) => {
 */
 exports.getByUser = async (user_id) => {
     try {
-        const projects = await Project.findAll({
+        const projects = await HealtCenter.findAll({
             include: [
                 {
                     model: User,
@@ -153,13 +159,13 @@ exports.getByUser = async (user_id) => {
 */
 exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_from_token) => {
     try {
-        const project = await Project.findByPk(id);
+        const project = await HealtCenter.findByPk(id);
 
-        // Valida si el administrador que quiere modificar el registro es el admin del proyecto
-        if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
-        
         // Valida si el proyecto no existe
         if(!project) throw new Error('Proyecto no encontrado');
+        
+        // Valida si el administrador que quiere modificar el registro es el admin del proyecto
+        if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
 
         await project.update({
             nombre,
@@ -179,7 +185,7 @@ exports.updateProject = async (id, nombre, descripcion, administrador_id, admin_
 */
 exports.deleteProject = async (id, admin_from_token) => {
     try {
-        const project = await Project.findByPk(id);
+        const project = await HealtCenter.findByPk(id);
 
         // Valida si el administrador que quiere modificar el registro es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
@@ -198,12 +204,12 @@ exports.deleteProject = async (id, admin_from_token) => {
 /**
  * Asociar un usuario a un proyecto
  * @param usuario_id
- * @param proyecto_id
+ * @param healtCenterId
  * @param admin_from_token
 */
-exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
+exports.associateUser = async (usuario_id, healtCenterId, admin_from_token) => {
     try {
-        const project = await Project.findByPk(proyecto_id);
+        const project = await HealtCenter.findByPk(healtCenterId);
 
         // Valida si el administrador que quiere crear la asociacion es el admin del proyecto
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
@@ -212,7 +218,7 @@ exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
         if(!project) throw new Error('Proyecto no encontrado');
 
         // Se llama el servicio que creara la asociacion
-        const assoProccess = await  UserProjectService.createAssociation(usuario_id, proyecto_id);
+        const assoProccess = await  UserProjectService.createAssociation(usuario_id, healtCenterId);
 
         // Si el proceso fallo devolvera el error
         if(assoProccess instanceof Error) throw assoProccess;
@@ -224,23 +230,23 @@ exports.associateUser = async (usuario_id, proyecto_id, admin_from_token) => {
     }
 }
 /**
- * Desasociar un usuario de un proyecto
+ * Desasociar un usuario de un centro de salud
  * @param usuario_id
- * @param proyecto_id
+ * @param healtCenterId
  * @param admin_from_token
 */
-exports.disassociateUser = async (usuario_id, proyecto_id, admin_from_token) => {
+exports.disassociateUser = async (usuario_id, healtCenterId, admin_from_token) => {
     try {
-        const project = await Project.findByPk(proyecto_id);
+        const project = await HealtCenter.findByPk(healtCenterId);
 
-        // Valida si el administrador que quiere eliminar la asociacion es el admin del proyecto
+        // Valida si el administrador que quiere eliminar la asociacion es el admin del centro de salud
         if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
         
-        // Valida si el proyecto no existe
-        if(!project) throw new Error('Proyecto no encontrado');
+        // Valida si el centro de salud no existe
+        if(!project) throw new Error('Centro de salud no encontrado');
 
         // Se llama el servicio que eliminara la asociacion
-        const disassoProccess = await  UserProjectService.removeAssociation(usuario_id, proyecto_id);
+        const disassoProccess = await  UserProjectService.removeAssociation(usuario_id, healtCenterId);
         
         // Si el proceso fallo devolvera el error
         if(disassoProccess instanceof Error) throw disassoProccess;
@@ -249,5 +255,36 @@ exports.disassociateUser = async (usuario_id, proyecto_id, admin_from_token) => 
        
     } catch(err) {
         throw new Error('Error al crear la asociacion')
+    }
+}
+
+/**
+ * Obtener los usuarios disponibles para asociar a un proyecto
+ * @param projectId
+ * @param admin_from_token
+*/
+exports.getAvailableUsers = async (projectId, admin_from_token) => {
+    try {
+
+        const project = await this.getById(projectId);
+
+        // Valida si el proyecto no existe
+        if(!project) throw new Error('Proyecto no encontrado');
+        
+        // Valida si el administrador que quiere modificar el registro es el admin del proyecto
+        if(project.administrador_id != admin_from_token) throw new Error('Acceso denegado, este proyecto no esta bajo su administación');
+
+        // Obtener el id de los usuarios ya asociados
+        const userIds = project.usuarios.map(user => Number(user.id));
+
+        // Obtiene todos los usuarios del administrador
+        const allUsersByAdmin = await UserService.getAllUserByAdministradorId(admin_from_token);
+
+        if(allUsersByAdmin instanceof Error) throw allUsersByAdmin;
+
+        return allUsersByAdmin.filter(user => !userIds.some(id => id == user.id));
+        
+    } catch (error) {
+        throw new Error('Error al obtener los usuarios disponibles')
     }
 }

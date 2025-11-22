@@ -12,6 +12,9 @@ const projectRoutes = require('./routes/project.routes');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/healt-centers', projectRoutes);
+
+const uploadRoutes = require('./routes/uploadRoutes');
+app.use('/api/v1/files', uploadRoutes);
 
 module.exports = app;
