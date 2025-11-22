@@ -38,5 +38,25 @@ module.exports = {
                 error: error.message
             });
         }
+    },
+    updateClinicalHistory: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { nombre, fecha, centro_salud_id, numero_documento } = req.body;
+            const file = req.file;
+
+            const updatedHistory = await clinicalHistoryService.updateClinicalHistory(id, { nombre, fecha, centro_salud_id, numero_documento }, file);
+
+            res.status(200).json({
+                message: 'Clinical history updated successfully',
+                data: updatedHistory
+            });
+        } catch (error) {
+            console.error('Error updating clinical history:', error);
+            res.status(500).json({
+                message: 'Error updating clinical history',
+                error: error.message
+            });
+        }
     }
 };

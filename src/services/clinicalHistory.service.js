@@ -31,5 +31,20 @@ module.exports = {
         } catch (error) {
             throw error;
         }
+    },
+    updateClinicalHistory: async (id, data, file) => {
+        try {
+            let historyData = { ...data };
+
+            if (file) {
+                const fileUrl = await storageService.uploadFile(file, 'clinical-histories');
+                historyData.archivo_url = fileUrl;
+            }
+
+            const updatedHistory = await clinicalHistoryRepository.update(id, historyData);
+            return updatedHistory;
+        } catch (error) {
+            throw error;
+        }
     }
 };

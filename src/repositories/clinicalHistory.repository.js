@@ -30,5 +30,17 @@ module.exports = {
         } catch (error) {
             throw error;
         }
+    },
+    update: async (id, data) => {
+        try {
+            const history = await ClinicalHistory.findByPk(id);
+            if (!history) {
+                throw new Error('Clinical history not found');
+            }
+            await history.update(data);
+            return history;
+        } catch (error) {
+            throw error;
+        }
     }
 };
