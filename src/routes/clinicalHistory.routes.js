@@ -6,6 +6,7 @@ const uploadMiddleware = require('../middlewares/uploadMiddleware');
 
 router.post('/', authenticateToken, uploadMiddleware.single('file'), clinicalHistoryController.createClinicalHistory);
 router.get('/patient/:documentNumber', clinicalHistoryController.getClinicalHistoriesByPatientId);
+router.get('/my-histories', authenticateToken, clinicalHistoryController.getMyClinicalHistories);
 router.put('/:id', authenticateToken, uploadMiddleware.single('file'), clinicalHistoryController.updateClinicalHistory);
 
 module.exports = router;

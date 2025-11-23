@@ -60,5 +60,25 @@ module.exports = {
                 error: error.message
             });
         }
+    },
+    getMyClinicalHistories: async (req, res) => {
+        try {
+            // req.user is populated by authenticateToken middleware
+            // For patients, we expect numero_documento in the token or associated user record
+            const { numero_documento } = req.user;
+
+            if (!numero_documento) {
+                return res.status(400).json({ message: 'User does not have a document number associated' });
+            }
+
+            const histories = await clinicalHistoryService.getClinicalHistoriesByPatientId(numero_documento);
+            res.status(200).json(histories);
+        } catch (error) {
+            console.error('Error fetching my clinical histories:', error);
+            res.status(500).json({
+                message: 'Error fetching clinical histories',
+                error: error.message
+            });
+        }
     }
 };
