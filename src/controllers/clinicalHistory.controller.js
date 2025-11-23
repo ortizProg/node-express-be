@@ -4,12 +4,13 @@ const createClinicalHistory = async (req, res) => {
     try {
         const { nombre, fecha, centro_salud_id, numero_documento } = req.body;
         const file = req.file;
+        const createdBy = req.user.id;
 
         if (!nombre || !fecha || !centro_salud_id || !numero_documento) {
             return res.status(400).json({ message: 'Missing required fields: nombre, fecha, centro_salud_id, numero_documento' });
         }
 
-        const newHistory = await clinicalHistoryService.createClinicalHistory({ nombre, fecha, centro_salud_id, numero_documento }, file);
+        const newHistory = await clinicalHistoryService.createClinicalHistory({ nombre, fecha, centro_salud_id, numero_documento, createdBy }, file);
 
         res.status(201).json({
             message: 'Clinical history created successfully',
@@ -44,8 +45,9 @@ module.exports = {
             const { id } = req.params;
             const { nombre, fecha, centro_salud_id, numero_documento } = req.body;
             const file = req.file;
+            const updatedBy = req.user.id;
 
-            const updatedHistory = await clinicalHistoryService.updateClinicalHistory(id, { nombre, fecha, centro_salud_id, numero_documento }, file);
+            const updatedHistory = await clinicalHistoryService.updateClinicalHistory(id, { nombre, fecha, centro_salud_id, numero_documento, updatedBy }, file);
 
             res.status(200).json({
                 message: 'Clinical history updated successfully',

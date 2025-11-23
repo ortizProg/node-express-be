@@ -22,6 +22,11 @@ module.exports = {
                         model: require('../models/healtCenter.model'),
                         as: 'centro_salud',
                         attributes: ['nombre']
+                    },
+                    {
+                        model: require('../models/user.model'),
+                        as: 'doctor',
+                        attributes: ['nombre']
                     }
                 ],
                 order: [['createdAt', 'DESC']]

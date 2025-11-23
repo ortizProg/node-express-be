@@ -18,6 +18,7 @@ User.belongsTo(User, { foreignKey: 'administrador_id', as: 'administrador' })
 
 const ClinicalHistory = require('./clinicalHistory.model');
 ClinicalHistory.belongsTo(HealtCenter, { foreignKey: 'centro_salud_id', as: 'centro_salud' });
+ClinicalHistory.belongsTo(User, { foreignKey: 'createdBy', as: 'doctor' });
 
 
 module.exports = { User, HealtCenter, UserHealtCenter, Rol, Permission, RolPermission, ClinicalHistory }
