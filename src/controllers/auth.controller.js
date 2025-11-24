@@ -15,7 +15,6 @@ exports.login = async (req, res) => {
 exports.loginPatient = async (req, res) => {
     const { numero_documento, fecha_expedicion } = req.body;
     try {
-        console.log(numero_documento, fecha_expedicion);
         const token = await authService.loginPatient(numero_documento, fecha_expedicion);
         res.status(200).json({ message: 'Inicio de sesión exitoso', token });
     } catch (error) {
