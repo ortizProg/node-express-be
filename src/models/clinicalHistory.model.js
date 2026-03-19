@@ -16,7 +16,7 @@ const ClinicalHistory = sequelize.define('historias_clinicas', {
         allowNull: false
     },
     centro_salud_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     archivo_url: {
