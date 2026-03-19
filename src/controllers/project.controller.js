@@ -123,9 +123,24 @@ exports.disassociateUser = async (req, res) => {
         const admin_from_token = req.user.id;
         const {usuario_id, proyecto_id} = req.body;
         const result = await projectservice.disassociateUser(usuario_id, proyecto_id, admin_from_token);
-        res.status(200).json({message: 'Asociacion creada con exito', result});
+        res.status(200).json({message: 'Usuario desasociado con exito', result});
 
     } catch(error) {
-        res.status(500).json({message: 'Error al crear la asociacion', error});
+        res.status(500).json({message: 'Error al eliminar la asociacion', error});
+    }
+}
+
+/**
+ * Obtener los usuarios que se pueden asociar a un proyecto
+*/
+exports.getAvailableUsers = async (req, res) => {
+    try {
+        const admin_from_token = req.user.id;
+        const {id} = req.params;
+        const data = await projectservice.getAvailableUsers(id, admin_from_token);
+        res.status(200).json({message: 'Usuario obtenidos con exito', data});
+
+    } catch(error) {
+        res.status(500).json({message: 'Error al obtener los usuarios', error});
     }
 }

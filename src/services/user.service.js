@@ -1,6 +1,20 @@
 const { Op } = require('sequelize');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
+const {USER_STATUS} = require('../utils/constants');
+
+const whereActiveLockAcount = {
+    status: {
+        [Op.in]: [
+            USER_STATUS.ACTIVED,
+            USER_STATUS.BLOCKED
+        ]
+    }
+}
+
+const whereRemoveAcount = {
+    status: USER_STATUS.DELETED // Cuenta eliminada
+}
 
 /**
  * Crea un usuario
@@ -14,7 +28,7 @@ exports.createUser = async (nombre, email, password, rol_id, administrador_id) =
     try {
         const userExists = await User.findOne({
             where: {
-                email
+                email,
             }
         })
 
@@ -50,6 +64,7 @@ exports.getAllUserByAdministradorId = async (administrador_id, nombre, email) =>
             email: {
                 [Op.iLike]: `%${email}%`
             },
+            ...whereActiveLockAcount
         };
 
         if(!nombre) delete whereClause.nombre;
@@ -73,6 +88,10 @@ exports.getById = async (id) => {
         const user = await User.findByPk(id, {
            attributes: {exclude: ['password']}
         })
+
+        // Valida que el usuario no haya sido eliminado
+        if(user.dataValues.status == 0) return null;
+
         return user
     } catch(err) {
         throw new Error('Error al obtener el usuario')
@@ -86,7 +105,11 @@ exports.getById = async (id) => {
 exports.getAllUserByRolId = async (rol_id) => {
     try {
         const users = await User.findAll({
-            where: {rol_id}, attributes: {exclude: ['password']}
+            where: {
+                rol_id,
+                ...whereActiveLockAcount
+            }, 
+            attributes: {exclude: ['password']}
         })
         return users
     } catch(err) {
@@ -145,16 +168,18 @@ exports.updateUser = async (id, nombre, email, rol_id, administrador_id, admin_f
 exports.deleteUser = async (id, admin_from_token) => {
     try {
 
+        const user = await User.findByPk(id);
+
         // Valida si el administrador que quiere eliminar el registro es el admin del usuario
         if(user.administrador_id != admin_from_token) throw new Error('Acceso denegado, este usuario no esta bajo su administación');
-        
-        const user = await User.findByPk(id);
         
         // Valida si el usuario no existe
         if(!user) throw new Error('Usuario no encontrado');
 
         // Elimina el usuario
-        await user.destroy();
+        await user.update({
+            status: USER_STATUS.DELETED
+        });
 
         return {message: 'Usuario eliminado con éxito'};
     } catch(err) {

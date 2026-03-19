@@ -1,18 +1,18 @@
-const UserProject = require('../models/userProject.model');
+const UserHealtCenter = require('../models/userHealtCenter.model');
 
 /**
  * Crea la asociación entre un usuario y un proyecto
  * @param usuario_id
- * @param proyecto_id
+ * @param healtCenterId
 */
-exports.createAssociation = async (usuario_id, proyecto_id) => {
+exports.createAssociation = async (usuario_id, healtCenterId) => {
     try {
         
-        //Obtiene el registro de la asociación que coincida con el usuario_id y el proyecto_id
-        const assoExists = await UserProject.findOne({
+        //Obtiene el registro de la asociación que coincida con el usuario_id y el healtCenterId
+        const assoExists = await UserHealtCenter.findOne({
             where: {
                 usuario_id,
-                proyecto_id
+                healtCenterId
             }
         })
 
@@ -20,9 +20,9 @@ exports.createAssociation = async (usuario_id, proyecto_id) => {
         if(assoExists) throw new Error('Esta asociación ya existe');
 
         // Crea la asociación
-        const newAsso = await UserProject.create({
+        const newAsso = await UserHealtCenter.create({
             usuario_id, 
-            proyecto_id, 
+            healtCenterId, 
         })
 
         return newAsso;
@@ -37,14 +37,14 @@ exports.createAssociation = async (usuario_id, proyecto_id) => {
  * @param usuario_id
  * @param proyecto_id
 */
-exports.removeAssociation = async (usuario_id, proyecto_id) => {
+exports.removeAssociation = async (usuario_id,healtCenterId) => {
     try {
 
-        //Obtiene el registro de la asociación que coincida con el usuario_id y el proyecto_id
-        const association = await UserProject.findOne({
+        //Obtiene el registro de la asociación que coincida con el usuario_id y el healtCenterId
+        const association = await UserHealtCenter.findOne({
             where: {
                 usuario_id,
-                proyecto_id
+                healtCenterId
             }
         })
 

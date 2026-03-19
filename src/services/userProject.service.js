@@ -1,19 +1,19 @@
-const UserProject = require('../model/userProject.model');
+const UserHealtCenter = require('../model/userHealtCenter.model');
 
-exports.createUserProject = async (usuario_id, proyecto_id) => {
+exports.createUserProject = async (usuario_id, healtCenterId) => {
     try {
-        const permissionExists = await UserProject.findOne({
+        const permissionExists = await UserHealtCenter.findOne({
             where: {
                 usuario_id,
-                proyecto_id
+                healtCenterId
             }
         })
 
         if(permissionExists) throw new Error('El userProject ya existe');
 
-        const newUserProject = await UserProject.create({
+        const newUserProject = await UserHealtCenter.create({
             usuario_id,
-            proyecto_id
+            healtCenterId
         })
 
         return newUserProject;
@@ -23,15 +23,15 @@ exports.createUserProject = async (usuario_id, proyecto_id) => {
     }
 }
 
-exports.updateUserProject = async (usuario_id, proyecto_id) => {
+exports.updateUserProject = async (usuario_id, healtCenterId) => {
     try {
-        const userProject = await UserProject.findByPk(id);
+        const userProject = await UserHealtCenter.findByPk(id);
 
         if(!userProject) throw new Error('Registro no encontrado');
 
-        await UserProject.update({
+        await UserHealtCenter.update({
             usuario_id,
-            proyecto_id
+            healtCenterId
         }, id)
 
         return userProject;
@@ -43,7 +43,7 @@ exports.updateUserProject = async (usuario_id, proyecto_id) => {
 
 exports.deleteUserProject = async (id) => {
     try {
-        const userProject = await UserProject.findByPk(id);
+        const userProject = await UserHealtCenter.findByPk(id);
 
         if(!userProject) throw new Error('Registro no encontrado');
 

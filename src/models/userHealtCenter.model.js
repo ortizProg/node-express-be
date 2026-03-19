@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-const UserProject = sequelize.define('usuarios_proyectos', {
+const UserHealtCenter = sequelize.define('usuarios_centros_salud', {
     usuario_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -10,12 +10,12 @@ const UserProject = sequelize.define('usuarios_proyectos', {
     proyecto_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {model: 'proyectos', key: 'id'}
+        references: {model: 'centros_salud', key: 'id'}
     },
 
 }, {
     timestamps: false,
-    tableName: 'usuarios_proyectos',
+    tableName: 'usuarios_centros_salud',
 })
 
-module.exports = UserProject;
+module.exports = UserHealtCenter;

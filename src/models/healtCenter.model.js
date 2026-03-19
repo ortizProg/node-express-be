@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-const Project = sequelize.define('proyectos', {
+const HealtCenter = sequelize.define('centros_salud', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     administrador_id: {
         type: DataTypes.INTEGER,
@@ -13,14 +13,14 @@ const Project = sequelize.define('proyectos', {
     fecha_de_creacion: {type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW},
 }, {
     timestamps: false,
-    tableName: 'proyectos',
+    tableName: 'centros_salud',
     hooks: {
-        afterCreate: (project, options) => {
-            if(project.fecha_de_creacion) {
-                project.fecha_de_creacion.setHours(project.fecha_de_creacion.getHours() - 5)
+        afterCreate: (healtCenter, options) => {
+            if(healtCenter.fecha_de_creacion) {
+                healtCenter.fecha_de_creacion.setHours(healtCenter.fecha_de_creacion.getHours() - 5)
             }
         }
     }
 })
 
-module.exports = Project;
+module.exports = HealtCenter;

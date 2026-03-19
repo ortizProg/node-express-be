@@ -16,7 +16,10 @@ const User = sequelize.define('usuarios', {
         allowNull: true,
         references: {model: 'usuarios', key: 'id'}
     },
-
+    status: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 }, {
     timestamps: false,
     tableName: 'usuarios',
